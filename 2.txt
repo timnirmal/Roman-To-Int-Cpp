@@ -2,7 +2,6 @@
 #include <cstring>
 #include <algorithm>
 #include <fstream>
-#include <vector>
 
 using namespace std;
 
@@ -12,23 +11,14 @@ int count_I =0, count_X = 0, count_C = 0, count_M = 0;
 int count_V = 0, count_L = 0, count_D = 0;
 
 
-void countAdd(char roman){
-    switch (roman) {
-        case 1: count_I++; break;
-        case 5: count_V++; break;
-        case 10: count_X++; break;
-        case 50: count_L++; break;
-        case 100: count_C++; break;
-    }
-}
 
-void countSub(char roman){
+void countVal(char roman){
     switch (roman) {
-        case  1: count_I--; break;
-        case  5: count_V--; break;
-        case  10: count_X--; break;
-        case  50: count_L--; break;
-        case  100: count_C--; break;
+        case 'I': count_I--; break;
+        case 'V': count_V--; break;
+        case 'X': count_X--; break;
+        case 'L': count_L--; break;
+        case 'C': count_C--; break;
     }
 }
 
@@ -43,7 +33,7 @@ int intValue(char roman){
 }
 
 //Return will check if there are valid numeric in here. But not the order
-bool validation2(string str){
+bool validation(string str){
     string arr_x[6] = {"IX","IV","XC","XL","CM","CD"};
     string arr_I[9] = {"III","XXX","CCC","II","XX","CC","I","X","C"};
     char arr_one[3]= { 'I','X','C'};
@@ -51,6 +41,24 @@ bool validation2(string str){
     char arr_DC[3] = {'D','L','V'};
 
     string BasicString = str;
+/*
+    //Remove "IX","IV","XC","XL","CM","CD"
+    for(int i =0; i < 6 ; i++) {
+        string StrToErase = arr_x[i];
+        string::size_type j = BasicString.find(StrToErase);
+        if (j != string::npos) {
+            BasicString.erase(j, StrToErase.length());
+        }
+    }
+
+    //Remove "D", "L", "V"
+    for(int i =0; i < 3 ; i++) {
+        string StrToErase = arr_D[i];
+        string::size_type j = BasicString.find(StrToErase);
+        if (j != string::npos) {
+            BasicString.erase(j, StrToErase.length());
+        }
+    }*/
 
     for (char j : arr_DC) {
         int count = 0;
@@ -147,87 +155,23 @@ int RomanToInt(string str){
 
 }
 
-bool validation(string str){
-    string arr_x[6] = {"IX","IV","XC","XL","CM","CD"};
-    string arr_I[9] = {"III","XXX","CCC","II","XX","CC","I","X","C"};
-    char arr_one[3]= { 'I','X','C'};
-    string arr_D[3] = {"D", "L", "V"};
-    char arr_DC[3] = {'D','L','V'};
-
-    string BasicString = str;
-
-    //Check for 'D','L','V'
-    int count = 0;
-    for (char j: arr_DC) {
-        count = 0;
-        for (char i: BasicString) {
-            if (i == j) count++;
-        }
-    }
-
-    cout << endl << "\t" << count << endl;
-    if (count < 2) {
-        //Remove "IX","IV","XC","XL","CM","CD"
-        for (int i = 0; i < 6; i++) {
-            string StrToErase = arr_x[i];
-            string::size_type j = BasicString.find(StrToErase);
-            if (j != string::npos) {
-                BasicString.erase(j, StrToErase.length());
-            }
-        }
-        //return true;
-        //Count 'I','X','C' and If any of theese exeed 3 times return false
-        count = 0;
-        for (char j: arr_one) {
-
-            for (char i: BasicString) {
-                if (i == j) count++;
-            }
-        }
-        if (count >= 4) {
-            return false;
-        } else {
-            return true;
-        }
-
-    }
-    else {
-        cout << "\tError";
-        return false;
-    }
-
-
-
-}
-
-void chk(string inpStr, int tot=0){
-
+void chk(string inpStr){
     //Length of the string
     int n = inpStr.length();
-    //int tot =0;     //Total
+    int tot =0;     //Total
 
     // IV  IX
     // XL XC
     // CD CM
 
     for (int i =0; i<inpStr.length(); i++){
-        //cout << " \t"<< inpStr[i]<<" ";
-
-       /* cout << endl << "I : " <<
-             count_I << " " << "V : " <<
-             count_V << " " << "X : " <<
-             count_X << " " << "L : " <<
-             count_L << " " << "C : " <<
-             count_C << " " << endl;*/
+        //cout << inpStr[i]<<" \t";
 
         //Termination Conditions
-     /*   if ((count_I > 3) || (count_X > 3) || (count_C > 3)
-            || (count_V > 1) || (count_L > 1)) {
-            cout << " " << count_I << " " << count_V << " " <<
-                 count_X << " " << count_L << " " <<
-                 count_C << " " << "ER";
+        if (count_I > 3 || count_X > 3 || count_C > 3 ){
+            cout << count_I <<" " << count_X <<" " << count_C <<" " << "ERROR";
             return;
-        }*/
+        }
 
         int s1 = intValue(inpStr[i]);
 
@@ -238,7 +182,7 @@ void chk(string inpStr, int tot=0){
             // XX , LX , XV , XI
             if (s1 >= s2){
                 tot += s1;
-                countAdd(s1);
+                countVal(s1);
                 if (s1 == s2){
 
                 }
@@ -249,8 +193,8 @@ void chk(string inpStr, int tot=0){
             else {
                 int tempval = 0;
                 // IV & and IX only in end
-                //////////////////////////////////////////////// IV && IX
-                if ((s1 == 1 && s2 == 5)  || (s1 == 1 && s2 == 10)) {   //IV
+                //////////////////////////////////////////////// IV
+                if (s1 == 1 && s2 == 5) {   //IV
                     // I IV(1 4) , IV I(4 1) , V IV (5 6)
                     int s3 = inpStr[i-1];
 
@@ -259,9 +203,10 @@ void chk(string inpStr, int tot=0){
                         //If S2 is last
                         if ( i+1 == n-1 ) {
                             tempval = s2 - s1;
-                            countSub(s1);
+                            countVal(s1);
                             tot += tempval;
                             cout<<"\t"<<tot;
+                            count_I--;
                             return;
                         }
                         else{
@@ -275,7 +220,7 @@ void chk(string inpStr, int tot=0){
                     }
 
                 }
-/*
+
                 /////////////////////////////////////////////// IX
                 else if (s1 == 1 && s2 == 10) {   //IX
                     // IIX , IXI
@@ -298,11 +243,11 @@ void chk(string inpStr, int tot=0){
                         return;
                     }
                 }
-*/
+
                 //////////////////////////////////////////////// XL
-             /*   else if (s1 == 10 && s2 == 50) {   //XL
+                else if (s1 == 10 && s2 == 50) {   //XL
                     // LXL XLX XLL XXL XLC not
-                    // CXL XLV XLI can
+                    // CXL XLV XLI XLV can
                         //Get previous val (only can be C or higher)
                     if (i != 0){
                         cout<<"\tPrev\n";
@@ -313,21 +258,12 @@ void chk(string inpStr, int tot=0){
                             tot += tempval;
                             cout<<"\t"<<tot;
                             count_X--;
-                            continue;
+                            return;
                         }
                         else{
                             cout<< "ERROR";
                             return;
                         }
-                    }
-                    // i == 0
-                    else{
-                        tempval = s2 - s1;
-                        countVal(s1);
-                        tot += tempval;
-                        cout<<"\t"<<tot;
-                        count_X--;
-                        continue;
                     }
 
                     //Get Next val (I V can || L X C cant)
@@ -347,38 +283,24 @@ void chk(string inpStr, int tot=0){
                             return;
                         }
                     }
-                }*/
+                }
 
-                //////////////////////////////////////////////// XL && XC
-                else if ((s1 == 10 && s2 == 100) || (s1 == 10 && s2 == 50)) {   //XC
+                //////////////////////////////////////////////// XC
+                else if (s1 == 10 && s2 == 100) {   //XC
                     // XCX XCC XCL || XXC LXC
                     // CCX CXC CXX
-                    //Get previous val (For c)
+
+                    //Get previous val
                     if (i != 0){
                         int s3 = inpStr[i-1];
                         if (s3 == 'C'){
                             tempval = s2 - s1;
-                            countSub(s1);
-                            tot += tempval;
-                            //cout<<"\t"<<tot;
-                            string r = inpStr.substr(i+2, n-i-2);
-                            //cout<<endl<<endl<<"Print "<<r<<"  "<<n-i-2<<endl;
-                            chk(r,tot);
-                            return;
+                            countVal(s1);
                         }
                         else {
                             cout << "ERROR";
                             return;
                         }
-                    }
-                    else{
-                        tempval = s2 - s1;
-                        countSub(s1);
-                        tot += tempval;
-                        string r = inpStr.substr(i+2, n-i-2);
-                        //cout<<endl<<endl<<"Print "<<r<<"  "<<n-i-2<<endl;
-                        chk(r,tot);
-                        return;
                     }
                 }
 
@@ -386,11 +308,9 @@ void chk(string inpStr, int tot=0){
                     cout << "ERROR";
                     return;
                 }
-
-                //////////////////////////////////////////////////
-                //cout<<"\n"<<tot;
+                cout<<"\n"<<tot;
                 tot += tempval;
-                //cout<<"\n"<<tot;
+                cout<<"\n"<<tot;
             }
 
         }
@@ -400,33 +320,10 @@ void chk(string inpStr, int tot=0){
             tot += s1;
         }
 
-        //cout<< "\nNext val\n";
+
     }
 
     cout<<"\t"<<tot;
-}
-
-void check(string inpStr){
-    vector <int> stack;
-    int tot=0;
-
-    for (int i =0; i<inpStr.length(); i++){
-        int s1 = intValue(inpStr[i]);
-
-        //// Not Last Charz
-        if (i != inpStr.length()-1){
-            int s2 = intValue(inpStr[i+1]);
-
-            // XX , LX , XV , XI
-            if (s1 >= s2){
-                tot += s1;
-                countAdd(s1);
-                if (s1 == s2){
-
-                }
-            }
-        }
-    }
 }
 
 int main() {
@@ -442,13 +339,7 @@ int main() {
     while (!file.eof()) {
         getline(file, inpStr);
         cout<<inpStr;
-        if(validation(inpStr)){
-            chk(inpStr);
-        }
-        else{
-            cout<<"\tEROOR";
-        }
-
+        chk(inpStr);
         cout<<endl<<endl;
     }
 
